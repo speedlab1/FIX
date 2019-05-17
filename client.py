@@ -294,11 +294,12 @@ class Application(fix.Application):
             print(f'QUANTITY IS 0!\nCHECK FOR STATUS OF LAST ORDER')
             if os.path.exists(f'{self.write_path}fix_orders.csv'):
                 temp_orders = pd.read_csv(f'{self.write_path}fix_orders.csv',index_col=0)
-                symbol_entries = temp_orders[symbol]
+                symbol_entries = temp_orders[temp_orders['symbol'] == symbol]
                 last_symbol_entry = symbol_entries.iloc[-1]
-                new_id = last_symbol_entry[6:]
-                last_symbol_entry['id'] = time_id + new_id
-                temp_orders = temp_orders.append(last_symbol_entry,ignore_index=True)
+                new_entry = last_symbol_entry
+                new_id = time_id + last_symbol_entry.name[6:]
+                new_entry.name = new_id
+                temp_orders = temp_orders.append(last_symbol_entry,ignore_index=False)
                 temp_orders.to_csv(f'{self.write_path}fix_orders.csv',)
                 self.order_status_request(cl_ord_id=last_symbol_entry)
                 # self.order_status_request(cl_ord_id=temp_orders.index[-1])
